@@ -1350,5 +1350,23 @@ config DRM_PANEL_JDI_DM_P2
 	help
 	  Say Y here if you want to enable support for the panels built
 	  around the JDI QHD display controller.
+
+config DRM_PANEL_GEN
+	tristate "JDI QHD DSI panel"
+	depends on OF
+	depends on DRM_MIPI_DSI
+	depends on BACKLIGHT_CLASS_DEVICE
+	help
+	  Say Y here if you want to enable support for the panels built
+	  around the Generic QHD display controller.
+
+config DRM_PANEL_TOSHIBA
+	tristate "JDI QHD DSI panel"
+	depends on OF
+	depends on DRM_MIPI_DSI
+	depends on BACKLIGHT_CLASS_DEVICE
+	help
+	  Say Y here if you want to enable support for the panels built
+	  around the TOSHIBA QHD display controller.	  
 	  
 endmenu

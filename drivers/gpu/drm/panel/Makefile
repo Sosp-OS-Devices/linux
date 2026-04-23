@@ -129,9 +129,10 @@ obj-$(CONFIG_DRM_PANEL_VISIONOX_R66451) += panel-visionox-r66451.o
 obj-$(CONFIG_DRM_PANEL_WIDECHIPS_WS2401) += panel-widechips-ws2401.o
 obj-$(CONFIG_DRM_PANEL_XINPENG_XPP055C272) += panel-xinpeng-xpp055c272.o
 obj-$(CONFIG_DRM_PANEL_SHARP_FHD) += panel-sharp-fhd.o
-
 obj-$(CONFIG_DRM_PANEL_JDI_QHD_P1) += panel-jdi-qhd-p1.o
 obj-$(CONFIG_DRM_PANEL_JDI_QHD_P2) += panel-jdi-qhd-p2.o
 obj-$(CONFIG_DRM_PANEL_JDI_QHD_P3) += panel-jdi-qhd-p3.o
 obj-$(CONFIG_DRM_PANEL_JDI_DM_P1) += panel-jdi-dualmipi-p1.o
 obj-$(CONFIG_DRM_PANEL_JDI_DM_P2) += panel-jdi-dualmipi-p2.o
+obj-$(CONFIG_DRM_PANEL_GEN) += panel-generic.o
+obj-$(CONFIG_DRM_PANEL_TOSHIBA) += panel-toshiba.o
