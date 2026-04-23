@@ -1304,5 +1304,51 @@ config DRM_PANEL_SHARP_FHD
 	depends on BACKLIGHT_CLASS_DEVICE
 	help
 	  Say Y here if you want to enable support for the panels built
-	  around the Sharp FHD display controller.	  
+	  around the Sharp FHD display controller.
+	  	  	  
+config DRM_PANEL_JDI_QHD_P1
+	tristate "JDI QHD DSI panel"
+	depends on OF
+	depends on DRM_MIPI_DSI
+	depends on BACKLIGHT_CLASS_DEVICE
+	help
+	  Say Y here if you want to enable support for the panels built
+	  around the JDI QHD display controller.
+	  
+config DRM_PANEL_JDI_QHD_P2
+	tristate "JDI QHD DSI panel"
+	depends on OF
+	depends on DRM_MIPI_DSI
+	depends on BACKLIGHT_CLASS_DEVICE
+	help
+	  Say Y here if you want to enable support for the panels built
+	  around the JDI QHD display controller.
+	  
+config DRM_PANEL_JDI_QHD_P3
+	tristate "JDI QHD DSI panel"
+	depends on OF
+	depends on DRM_MIPI_DSI
+	depends on BACKLIGHT_CLASS_DEVICE
+	help
+	  Say Y here if you want to enable support for the panels built
+	  around the JDI QHD display controller.
+	  
+config DRM_PANEL_JDI_DM_P1
+	tristate "JDI QHD DSI panel"
+	depends on OF
+	depends on DRM_MIPI_DSI
+	depends on BACKLIGHT_CLASS_DEVICE
+	help
+	  Say Y here if you want to enable support for the panels built
+	  around the JDI QHD display controller.
+	  
+config DRM_PANEL_JDI_DM_P2
+	tristate "JDI QHD DSI panel"
+	depends on OF
+	depends on DRM_MIPI_DSI
+	depends on BACKLIGHT_CLASS_DEVICE
+	help
+	  Say Y here if you want to enable support for the panels built
+	  around the JDI QHD display controller.
+	  
 endmenu
