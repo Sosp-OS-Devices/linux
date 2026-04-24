@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0
-#include "qcom-msm8974.dtsi"
+#include "qcom-msm8974pro.dtsi"
 #include "pm8841.dtsi"
 #include "pm8941.dtsi"
 #include <dt-bindings/input/input.h>
@@ -21,7 +21,7 @@
 		stdout-path = "serial0:115200n8";
 	};
 	
-
+/* To-Do
 	gpio-keys {
 		compatible = "gpio-keys";
 
@@ -34,15 +34,16 @@
 			linux,input-type = <1>;
 			linux,code = <KEY_VOLUMEUP>;
 		};
-/* To-Do
+
 		key-volume-down {
 			label = "volume_down";
 			gpios = <&pm8941_gpios 3 GPIO_ACTIVE_LOW>;
 			linux,input-type = <1>;
 			linux,code = <KEY_VOLUMEDOWN>;
 		};
-*/
+
 	};
+*/	
 /* To-Do
 	clk_pwm: pwm {
 		compatible = "clk-pwm";
@@ -106,22 +107,22 @@
 	*/
 };
 
-/*
+
  // Charger
 &blsp1_i2c1 {
 	status = "okay";
 	clock-frequency = <100000>;
 
-	charger: bq24192@6b {
-		compatible = "ti,bq24192";
-		reg = <0x6b>;
-		interrupts-extended = <&spmi_bus 0 0xd5 0 IRQ_TYPE_EDGE_FALLING>;
+	charger: lp8788@40 {
+		compatible = "ti,lp8788";
+		reg = <0x40>;
+		interrupts-extended = <&spmi_bus 0 0xA8 0 IRQ_TYPE_EDGE_FALLING>;
 
 		omit-battery-class;
 
 		usb_otg_vbus: usb-otg-vbus { };
 	};
-
+/*
 	fuelgauge: max17048@36 {
 		compatible = "maxim,max17048";
 		reg = <0x36>;
@@ -137,8 +138,9 @@
 
 		maxim,alert-low-soc-level = <2>;
 	};
+*/	
 };
-*/
+
 &blsp1_i2c2 {
 	status = "okay";
 	clock-frequency = <355000>;
