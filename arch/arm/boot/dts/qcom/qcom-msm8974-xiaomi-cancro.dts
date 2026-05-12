@@ -1,0 +1,185 @@
+/dts-v1/;
+
+#include "qcom-msm8974.dtsi"
+#include "pm8841.dtsi"
+#include "pm8941.dtsi"
+#include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/input/input.h>
+#include <dt-bindings/interrupt-controller/irq.h>
+
+/ {
+    model = "Xiaomi Mi 3 (cancro)";
+    compatible = "xiaomi,cancro", "qcom,msm8974";
+
+    aliases {
+        serial0 = &blsp1_uart1;
+    };
+
+    chosen {
+        stdout-path = "serial0:115200n8";
+    };
+
+    /* 1. INPUT: Volume Buttons */
+    gpio-keys {
+        compatible = "gpio-keys";
+        autorepeat;
+
+        pinctrl-names = "default";
+        pinctrl-0 = <&gpio_keys_default>;
+
+        volume-up {
+            label = "Volume Up";
+            gpios = <&tlmm 106 GPIO_ACTIVE_LOW>;
+            linux,code = <KEY_VOLUMEUP>;
+            debounce-interval = <15>;
+        };
+
+        volume-down {
+            label = "Volume Down";
+            gpios = <&tlmm 107 GPIO_ACTIVE_LOW>;
+            linux,code = <KEY_VOLUMEDOWN>;
+            debounce-interval = <15>;
+        };
+    };
+
+    /* 2. VIBRATOR: Basic Haptics */
+    vibrator {
+        compatible = "gpio-vibrator";
+        enable-gpios = <&tlmm 60 GPIO_ACTIVE_HIGH>;
+    };
+
+    /* 3. WIRELESS: WiFi (Iris) Power Sequence */
+    wifi_pwrseq: wifi-pwrseq {
+        compatible = "mmc-pwrseq-simple";
+        reset-gpios = <&tlmm 104 GPIO_ACTIVE_LOW>;
+    };
+};
+
+/* 4. RPM REGULATORS (Fixes the missing phandle references) */
+&rpm_requests {
+    pm8941-regulators {
+        compatible = "qcom,rpm-pm8941-regulators";
+
+        pm8941_l6: l6 {
+            regulator-min-microvolt = <1800000>;
+            regulator-max-microvolt = <1800000>;
+        };
+
+        pm8941_l12: l12 { /* VCCA (3.0V) */
+            regulator-min-microvolt = <3000000>;
+            regulator-max-microvolt = <3000000>;
+        };
+
+        pm8941_l20: l20 { /* eMMC VMMC (2.95V) */
+            regulator-min-microvolt = <2950000>;
+            regulator-max-microvolt = <2950000>;
+        };
+
+        pm8941_l22: l22 { /* VDD (1.8V) */
+            regulator-min-microvolt = <1800000>;
+            regulator-max-microvolt = <1800000>;
+        };
+    };
+};
+
+/* 5. DISPLAY: Sharp FHD Video Panel */
+&mdss_dsi0 {
+    status = "okay";
+    vhv-supply = <&pm8941_l22>;
+    vcca-supply = <&pm8941_l12>;
+
+    panel@0 {
+        compatible = "qcom,mdss_dsi_sharp_fhd_video";
+        reg = <0>;
+        backlight = <&pm8941_wled>;
+        reset-gpios = <&tlmm 8 GPIO_ACTIVE_LOW>;
+        
+        port {
+            panel_in: endpoint {
+                remote-endpoint = <&mdss_dsi0_out>;
+            };
+        };
+    };
+
+    /* Integrated ports block to complete the bidirectional graph handshake */
+    ports {
+        #address-cells = <1>;
+        #size-cells = <0>;
+
+        port@1 {
+            reg = <1>;
+            mdss_dsi0_out: endpoint {
+                remote-endpoint = <&panel_in>;
+            };
+        };
+    };
+};
+
+&pm8941_wled {
+    status = "okay";
+    qcom,current-boost-limit = <20>;
+    qcom,fs-current-limit = <20>;
+};
+
+/* 6. TOUCH: Synaptics S3202 on I2C2 */
+&blsp1_i2c2 {
+    status = "okay";
+    clock-frequency = <400000>;
+
+    touchscreen@20 {
+        compatible = "synaptics,s3202";
+        reg = <0x20>;
+        interrupt-parent = <&tlmm>;
+        interrupts = <72 IRQ_TYPE_EDGE_FALLING>;
+        reset-gpios = <&tlmm 13 GPIO_ACTIVE_LOW>;
+        vdd-supply = <&pm8941_l22>;
+        avdd-supply = <&pm8941_l12>;
+    };
+};
+
+/* 7. WIRELESS: WCN3680 WiFi & Bluetooth */
+&pronto {
+    status = "okay";
+    vcc-supply = <&pm8941_l12>; /* WCNSS Analog */
+    vccio-supply = <&pm8941_l22>; /* WCNSS Digital */
+};
+
+&blsp1_uart2 { /* Bluetooth interface */
+    status = "okay";
+    bluetooth {
+        compatible = "qcom,wcn3680-bt";
+        clocks = <&rpmcc 11>; /*  Points to the actual RPM clock controller */
+        clock-names = "lpo";
+    };
+};
+
+
+/* 8. PIN CONTROL: TLMM Configurations */
+&tlmm {
+    gpio_keys_default: gpio-keys-default {
+        pins = "gpio106", "gpio107";
+        function = "gpio";
+        drive-strength = <2>;
+        bias-pull-up;
+    };
+};
+
+/* 9. STORAGE & SYSTEM */
+&sdhc_1 { /* Internal eMMC */
+    status = "okay";
+    vmmc-supply = <&pm8941_l20>;
+    vqmmc-supply = <&pm8941_l6>;
+    bus-width = <8>;
+    non-removable;
+};
+
+&pm8941_resin { /* Power Key */
+    status = "okay";
+    linux,code = <KEY_POWER>;
+};
+
+&usb { /* Standardized USB Node */
+    status = "okay";
+    dr_mode = "otg";
+};
+
