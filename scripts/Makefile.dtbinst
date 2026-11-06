@@ -1,0 +1,53 @@
+# SPDX-License-Identifier: GPL-2.0
+# ==========================================================================
+# Installing dtb files
+#
+# Installs all dtb files listed in $(dtb-y) either in the
+# INSTALL_DTBS_PATH directory or the default location:
+#
+#   $INSTALL_PATH/dtbs/$KERNELRELEASE
+# ==========================================================================
+
+PHONY := __dtbs_install
+__dtbs_install:
+
+include include/config/auto.conf
+include $(srctree)/scripts/Kbuild.include
+
+dst := $(INSTALL_DTBS_PATH)
+
+quiet_cmd_dtb_install = INSTALL $@
+      cmd_dtb_install = install -D -m 0644 $< $@
+
+$(dst)/%: $(obj)/%
+	$(call cmd,dtb_install)
+
+dtbs := $(patsubst $(obj)/%,%,$(call read-file, $(obj)/dtbs-list))
+vendor := $(sort $(dir $(filter %.dtb, $(dtbs))))
+subdir := $(sort $(dir $(filter %.dtbo, $(dtbs))))
+
+dtbs += $(patsubst $(obj)/%,%,$(if $(subdir), $(shell cd $(srctree)/$(obj) && find $(subdir) -name '*.scr')))
+dtbs += $(patsubst $(obj)/%,%,$(if $(subdir), $(shell cd $(srctree)/$(obj) && find $(subdir) -name 'README.*-overlays')))
+
+ifdef CONFIG_ARCH_WANT_FLAT_DTB_INSTALL
+
+define gen_install_rules
+$(dst)/%: $(obj)/$(1)%
+	$$(call cmd,dtb_install)
+endef
+
+$(foreach d, $(sort $(dir $(dtbs))), $(eval $(call gen_install_rules,$(d))))
+
+# Armbian uses subdirectories <overlay> for arm
+# and <allwinner/overlay> for arm64.
+# delete the vendor's directory if the target architecture is an arm.
+ifdef CONFIG_ARM
+dtbs := $(patsubst $(vendor)%,%,$(dtbs))
+endif
+
+endif # CONFIG_ARCH_WANT_FLAT_DTB_INSTALL
+
+__dtbs_install: $(addprefix $(dst)/, $(dtbs))
+	@:
+
+.PHONY: $(PHONY)
